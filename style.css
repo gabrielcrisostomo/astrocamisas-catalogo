@@ -1,4 +1,4 @@
-/* Reset básico para padronizar todos os navegadores */
+/* Reset básico */
 * {
     margin: 0;
     padding: 0;
@@ -6,74 +6,102 @@
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
+/* Fundo preto e texto claro para todo o site */
 body {
-    background-color: #f4f4f5;
-    color: #333;
+    background-color: #000;
+    color: #fff;
     line-height: 1.6;
 }
 
-/* Cabeçalho minimalista */
+/* Cabeçalho */
 header {
     text-align: center;
     padding: 3rem 1rem;
-    background-color: #111;
-    color: #fff;
+    background-color: #000;
 }
 
-header h1 {
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
-    text-transform: uppercase;
-    letter-spacing: 2px;
+.logo-topo {
+    max-width: 250px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
 }
 
-header p {
-    color: #ccc;
-}
-
-/* Grid Inteligente e Responsivo */
+/* Grid de 4 Colunas */
 .grid-produtos {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: 2rem;
     padding: 2rem;
-    max-width: 1200px;
-    margin: 0 auto; /* Centraliza a vitrine na tela grande */
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
-/* Design de cada cartão */
+/* Cartão do Produto */
 .cartao-produto {
-    background: #fff;
+    background: #111;
+    border: 1px solid #333;
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.2s ease, border-color 0.2s ease; /* Transição apenas para a borda e o pulo do cartão */
     display: flex;
     flex-direction: column;
 }
 
 .cartao-produto:hover {
-    transform: translateY(-5px); /* Efeito de flutuar ao passar o mouse */
-    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-5px);
+    border-color: #555;
 }
 
-.cartao-produto img {
+/* --- SISTEMA DE TROCA DE IMAGENS (Sem delay) --- */
+.container-imagens {
+    position: relative;
     width: 100%;
     height: 350px;
-    object-fit: cover; /* Corta a imagem perfeitamente sem amassar */
+    overflow: hidden;
+    transition: opacity 0.2s ease-in-out;
+    background-color: #000;
 }
 
+.container-imagens img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Removi a propriedade "transition" daqui. Agora a troca é seca e instantânea. */
+}
+
+/* Estado inicial: Frente invisível, Costas visível */
+.img-frente {
+    opacity: 0;
+    z-index: 2;
+}
+
+.img-costas {
+    opacity: 1;
+    z-index: 1;
+}
+
+/* Ao passar o mouse: Frente fica visível */
+.cartao-produto:hover .img-frente {
+    opacity: 1;
+}
+/* --- FIM DO SISTEMA DE IMAGENS --- */
+
+/* Textos e Informações */
 .info-produto {
     padding: 1.5rem;
     display: flex;
     flex-direction: column;
-    flex-grow: 1; /* Garante que o botão fique sempre no rodapé do cartão */
+    flex-grow: 1;
 }
 
 .info-produto h2 {
     font-size: 1.25rem;
     margin-bottom: 0.5rem;
-    color: #111;
+    color: #fff;
 }
 
 .preco {
@@ -84,17 +112,17 @@ header p {
 }
 
 .descricao {
-    color: #666;
+    color: #bbb;
     font-size: 0.95rem;
     margin-bottom: 1.5rem;
-    flex-grow: 1; /* Empurra o botão para baixo */
+    flex-grow: 1;
 }
 
-/* Estilo do botão do WhatsApp */
+/* Botão WhatsApp */
 .btn-comprar {
     display: block;
     text-align: center;
-    background-color: #25D366; 
+    background-color: #25D366;
     color: #fff;
     text-decoration: none;
     padding: 0.8rem;
@@ -105,4 +133,23 @@ header p {
 
 .btn-comprar:hover {
     background-color: #128C7E;
+}
+
+/* --- Responsividade --- */
+@media (max-width: 1024px) {
+    .grid-produtos {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .grid-produtos {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+        gap: 1.5rem;
+    }
+    
+    .container-imagens {
+        height: 400px; /* Um pouco mais alto no celular para destacar bem */
+    }
 }
