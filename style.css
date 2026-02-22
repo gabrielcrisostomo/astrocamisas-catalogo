@@ -587,3 +587,53 @@ footer {
     font-family: 'fonte_astro3', sans-serif;
     white-space: nowrap; 
 }
+
+.bloco-preco-lancamento {
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.tag-escassez {
+    background-color: #e74c3c; /* Vermelho de urgência */
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    letter-spacing: 1px;
+}
+
+.valores-destaque {
+    display: flex;
+    flex-direction: column; 
+    align-items: flex-start; 
+    gap: 0.2rem; 
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.preco-antigo {
+    color: #666;
+    font-size: 1.1rem;
+    text-decoration: line-through;
+    font-family: 'Courier New', Courier, monospace;
+    white-space: nowrap; 
+}
+.bloco-preco-lancamento .preco-destaque {
+    margin-bottom: 0;
+    color: #27ae60;
+    font-size: 2.2rem; 
+    white-space: nowrap; 
+    line-height: 1; 
+}
+.texto-urgencia {
+    color: #fff;
+    font-family: 'fonte_astro','sans_serif'; 
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-top: 0.2rem;
+}
