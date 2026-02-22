@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treino de Perna - Astro Camisas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <a href="index.html">
+            <img src="assets/LOGOGABRIEL.png" alt="Astro Camisas Logo" class="logo-topo">
+        </a>
+    </header>
+
+    <main class="container-produto">
+        <section class="galeria-produto">
+            
+            <div class="miniaturas">
+                <img src="assets/perna_costas_nv.jpg" class="miniatura ativa" onclick="trocarImagem(this)" alt="Costas">
+                <img src="assets/perna_frente_nv.jpg" class="miniatura" onclick="trocarImagem(this)" alt="Frente">
+                <img src="assets/logo_prox.jpeg" class="miniatura" onclick="trocarImagem(this)" alt="Logo">
+                <img src="assets/modelo_perna.jpeg" class="miniatura" onclick="trocarImagem(this)" alt="Modelo">
+                <img src="assets/perna_costas_prox.jpeg" class="miniatura" onclick="trocarImagem(this)" alt="CostasP">
+                
+                </div>
+
+            <div class="imagem-principal">
+                <img src="assets/perna_costas_nv.jpg" id="img-destaque" alt="Oversized Treino de Perna">
+            </div>
+
+        </section>
+
+        <section class="info-detalhada">
+            <a href="index.html" class="link-voltar">← Voltar para o catálogo</a>
+            
+            <h1>OVERSIZED (PUMP COVER) "TREINO DE PERNA"</h1>
+            <p class="preco-destaque">R$ 109,90</p>
+            
+            <div class="descricao-longa">
+                <p>A clássica Pump Cover para os dias mais pesados de treino. Feita em algodão premium com modelagem ampla que garante total liberdade de movimento.</p>
+                <ul>
+                    <li>Gola canelada resistente</li>
+                    <li>Estampa de alta durabilidade</li>
+                    <li>Caimento Oversized padrão</li>
+                </ul>
+            </div>
+
+            <div class="seletor-tamanhos">
+                <div class="topo-seletor">
+                    <span class="titulo-tamanhos">Escolha o tamanho:</span>
+                    <a style="cursor: pointer;" class="link-tabela" onclick="rolarParaTabela(event)">📏 Ver Tabela de Medidas</a>
+                </div>
+                <div class="botoes-tamanho">
+                    <button class="btn-tamanho" onclick="selecionarTamanho(this, 'P')">P</button>
+                    <button class="btn-tamanho" onclick="selecionarTamanho(this, 'M')">M</button>
+                    <button class="btn-tamanho" onclick="selecionarTamanho(this, 'G')">G</button>
+                    <button class="btn-tamanho" onclick="selecionarTamanho(this, 'GG')">GG</button>
+                    <button class="btn-tamanho" onclick="selecionarTamanho(this, 'XG')">XG</button>
+                </div>
+            </div>
+
+            <a href="https://wa.me/5521983000355?text=Fala!%20Estou%20na%20página%20da%20Oversized%20Treino%20de%20Perna%20e%20quero%20garantir%20a%20minha." id="btn-whatsapp" target="_blank" class="btn-comprar btn-grande">
+                Comprar via WhatsApp
+            </a>
+
+            <p class="microcopy-botao">🔒 Compra segura. Entrega e pagamento pelo chat.</p>
+        </section>
+    </main>
+
+    <section id="tabela-medidas" class="container-tabela">
+        <h2>Tabela de Medidas</h2>
+        <p>Compare com uma peça que já tenha para garantir o caimento perfeito no treino.</p>
+        
+        <div class="tabela-responsiva">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tamanho</th>
+                        <th>Largura</th>
+                        <th>Comprimento</th>
+                        <th>Manga</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>P</strong></td>
+                        <td>56 cm</td>
+                        <td>73 cm</td>
+                        <td>19 cm</td>
+                    </tr>
+                    <tr>
+                        <td><strong>M</strong></td>
+                        <td>59 cm</td>
+                        <td>75,5 cm</td>
+                        <td>20,5 cm</td>
+                    </tr>
+                    <tr>
+                        <td><strong>G</strong></td>
+                        <td>62 cm</td>
+                        <td>78 cm</td>
+                        <td>22 cm</td>
+                    </tr>
+                    <tr>
+                        <td><strong>GG</strong></td>
+                        <td>65 cm</td>
+                        <td>80,5 cm</td>
+                        <td>24,5 cm</td>
+                    </tr>
+                    <tr>
+                        <td><strong>XG</strong></td>
+                        <td>68 cm</td>
+                        <td>84 cm</td>
+                        <td>27 cm</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <div class="barra-fixa-mobile">
+        <div class="preco-fixo">R$ 109,90</div>
+        <a href="https://wa.me/5521983000355?text=Fala!%20Estou%20na%20página%20da%20Oversized%20Treino%20de%20Perna%20e%20quero%20garantir%20a%20minha." id="btn-whatsapp-mobile" target="_blank" class="btn-comprar">
+            Comprar
+        </a>
+    </div>
+
+    <script>
+        // --- LÓGICA DA GALERIA DE IMAGENS ---
+        function trocarImagem(elementoMiniatura) {
+            document.getElementById('img-destaque').src = elementoMiniatura.src;
+            let miniaturas = document.querySelectorAll('.miniatura');
+            miniaturas.forEach(min => min.classList.remove('ativa'));
+            elementoMiniatura.classList.add('ativa');
+        }
+
+        const containerImagem = document.querySelector('.imagem-principal');
+        const imagemDestaque = document.getElementById('img-destaque');
+
+        // Quando o mouse se move DENTRO da imagem
+        containerImagem.addEventListener('mousemove', function(e) {
+            // Pega o tamanho e a posição exata da caixa na tela
+            const rect = containerImagem.getBoundingClientRect();
+            
+            // Calcula a posição do mouse em relação à caixa
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            // Transforma essa posição em porcentagem (de 0% a 100%)
+            const xPorcentagem = (x / rect.width) * 100;
+            const yPorcentagem = (y / rect.height) * 100;
+
+            // Move o "eixo" do zoom para onde o mouse está
+            imagemDestaque.style.transformOrigin = `${xPorcentagem}% ${yPorcentagem}%`;
+            
+            // Aplica o zoom (Neste caso, 2.5x o tamanho original. Pode aumentar se quiser)
+            imagemDestaque.style.transform = "scale(2.5)";
+        });
+
+        // Quando o mouse SAI da imagem, volta ao normal
+        containerImagem.addEventListener('mouseleave', function() {
+            imagemDestaque.style.transformOrigin = "center center";
+            imagemDestaque.style.transform = "scale(1)";
+        });
+
+        // --- LÓGICA DE ESCOLHA DE TAMANHO E WHATSAPP ---
+        const numeroWhatsApp = "5521983000355"; // Seu número configurado
+        const mensagemPadrao = "Fala! Estou na página da Oversized Treino de Perna e quero garantir a minha.";
+        let tamanhoEscolhido = null; // Começa sem nenhum tamanho selecionado
+
+        function selecionarTamanho(botaoClicado, tamanho) {
+            // Verifica se o botão que o usuário clicou já estava selecionado
+            const jaEstavaSelecionado = botaoClicado.classList.contains('selecionado');
+            
+            // Passo 1: Limpa a seleção de TODOS os botões
+            let todosOsBotoes = document.querySelectorAll('.btn-tamanho');
+            todosOsBotoes.forEach(btn => btn.classList.remove('selecionado'));
+
+            // Passo 2: Aplica a lógica de "liga/desliga"
+            if (jaEstavaSelecionado) {
+                // Se já estava clicado, apenas desmarca (tamanho volta a ser null)
+                tamanhoEscolhido = null;
+            } else {
+                // Se não estava clicado, marca ele e salva o tamanho escolhido
+                botaoClicado.classList.add('selecionado');
+                tamanhoEscolhido = tamanho;
+            }
+
+            // Passo 3: Chama a função que reescreve o link do WhatsApp
+            atualizarLinkWhatsApp();
+        }
+
+        function atualizarLinkWhatsApp() {
+            const btnWhatsapp = document.getElementById('btn-whatsapp');
+            const btnWhatsappMobile = document.getElementById('btn-whatsapp-mobile'); // Pega o botão novo
+            let mensagemFinal = mensagemPadrao;
+
+            // Se o usuário tiver um tamanho escolhido, muda a mensagem
+            if (tamanhoEscolhido !== null) {
+                mensagemFinal = `Fala! Quero garantir a Oversized Treino de Perna no tamanho ${tamanhoEscolhido}.`;
+            }
+
+            const linkPronto = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagemFinal)}`;
+            
+            // Atualiza os links dos dois botões
+            if (btnWhatsapp) btnWhatsapp.href = linkPronto;
+            if (btnWhatsappMobile) btnWhatsappMobile.href = linkPronto;
+        }
+
+        function rolarParaTabela(event) {
+            event.preventDefault(); 
+            
+            // 1. Encontra a tabela na página
+            const tabela = document.getElementById('tabela-medidas');
+            
+            // 2. Calcula exatamente em qual pixel da tela a tabela começa
+            const posicaoExata = tabela.getBoundingClientRect().top + window.scrollY;
+            
+            // 3. Manda a janela inteira rolar até esse pixel suavemente
+            window.scrollTo({
+                top: posicaoExata,
+                behavior: 'smooth'
+            });
+        }
+    </script>
+</body>
+</html>

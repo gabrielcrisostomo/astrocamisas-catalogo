@@ -6,14 +6,44 @@
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* Fundo preto e texto claro para todo o site */
+@font-face {
+    font-family: 'fonte_astro'; 
+    src: url('assets/anybodyb.ttf') format('truetype'); 
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'fonte_astro1'; 
+    src: url('assets/anybodycl.ttf') format('truetype'); 
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'fonte_astro2'; 
+    src: url('assets/anybodyubl.ttf') format('truetype'); 
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'fonte_astro3'; 
+    src: url('assets/anybodyexbol.ttf') format('truetype'); 
+    font-weight: normal;
+    font-style: normal;
+}
+
+html {
+    scroll-behavior: smooth; 
+}
+
 body {
     background-color: #000;
     color: #fff;
     line-height: 1.6;
 }
 
-/* Cabeçalho */
 header {
     text-align: center;
     padding: 3rem 1rem;
@@ -27,7 +57,6 @@ header {
     margin: 0 auto;
 }
 
-/* Grid de 4 Colunas */
 .grid-produtos {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -37,15 +66,16 @@ header {
     margin: 0 auto;
 }
 
-/* Cartão do Produto */
 .cartao-produto {
     background: #111;
     border: 1px solid #333;
     border-radius: 8px;
     overflow: hidden;
-    transition: transform 0.2s ease, border-color 0.2s ease; /* Transição apenas para a borda e o pulo do cartão */
+    transition: transform 0.2s ease, border-color 0.2s ease;
     display: flex;
     flex-direction: column;
+    text-decoration: none; 
+    color: #fff;
 }
 
 .cartao-produto:hover {
@@ -53,13 +83,11 @@ header {
     border-color: #555;
 }
 
-/* --- SISTEMA DE TROCA DE IMAGENS (Sem delay) --- */
 .container-imagens {
     position: relative;
     width: 100%;
-    height: 350px;
+    aspect-ratio: 1 / 1; 
     overflow: hidden;
-    transition: opacity 0.2s ease-in-out;
     background-color: #000;
 }
 
@@ -69,28 +97,25 @@ header {
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    /* Removi a propriedade "transition" daqui. Agora a troca é seca e instantânea. */
+    object-fit: cover; 
+    transition: opacity 0.2s ease-in-out; 
 }
 
-/* Estado inicial: Frente invisível, Costas visível */
-.img-frente {
-    opacity: 0;
-    z-index: 2;
+.img-hover {
+    opacity: 0; 
+    z-index: 2; 
 }
 
-.img-costas {
+.img-padrao {
+    opacity: 1; 
+    z-index: 1; 
+}
+
+
+.cartao-produto:hover .img-hover {
     opacity: 1;
-    z-index: 1;
 }
 
-/* Ao passar o mouse: Frente fica visível */
-.cartao-produto:hover .img-frente {
-    opacity: 1;
-}
-/* --- FIM DO SISTEMA DE IMAGENS --- */
-
-/* Textos e Informações */
 .info-produto {
     padding: 1.5rem;
     display: flex;
@@ -99,20 +124,25 @@ header {
 }
 
 .info-produto h2 {
-    font-size: 1.25rem;
+    font-family: 'fonte_astro3', sans-serif;
+    font-size: 1.1rem;
     margin-bottom: 0.5rem;
     color: #fff;
+    text-align: center; 
 }
 
 .preco {
     font-size: 1.5rem;
-    font-weight: bold;
+    font-family: 'Courier New', Courier, monospace; 
+    font-weight: bold; 
     color: #27ae60;
     margin-bottom: 0.5rem;
+    text-align: center;
 }
 
 .descricao {
     color: #bbb;
+    font-family: 'fonte_astro', sans-serif;
     font-size: 0.95rem;
     margin-bottom: 1.5rem;
     flex-grow: 1;
@@ -149,7 +179,411 @@ header {
         gap: 1.5rem;
     }
     
-    .container-imagens {
-        height: 400px; /* Um pouco mais alto no celular para destacar bem */
+}
+
+.btn-detalhes {
+    display: block;
+    text-align: center;
+    background-color: #fff;
+    color: #000;
+    text-decoration: none;
+    padding: 0.8rem;
+    border-radius: 4px;
+    font-weight: bold;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.btn-detalhes:hover {
+    background-color: #333;
+    color: #fff;
+}
+
+.container-produto {
+    display: flex;
+    gap: 4rem;
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+}
+
+
+.galeria-produto {
+    flex: 1.5;
+    display: flex;
+    flex-direction: row; 
+    gap: 1.5rem; 
+    align-items: flex-start; 
+}
+
+.imagem-principal {
+    flex: 1;
+    width: 100%;
+    overflow: hidden; 
+    border-radius: 8px;
+    border: 1px solid #333;
+    cursor: zoom-in; 
+    position: relative;
+}
+
+.imagem-principal img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    transition: transform 0.2s ease-out; 
+    transform-origin: center center; 
+}
+
+.miniaturas {
+    display: flex;
+    flex-direction: column; 
+    gap: 1rem;
+    max-height: 600px; 
+    overflow-y: auto; 
+}
+
+.miniaturas::-webkit-scrollbar {
+    display: none;
+}
+
+.miniatura {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 2px solid #333;
+    transition: border-color 0.2s, opacity 0.2s;
+    opacity: 0.6;
+    flex-shrink: 0; 
+}
+
+.miniatura:hover {
+    opacity: 1;
+}
+
+.miniatura.ativa {
+    border-color: #fff;
+    opacity: 1;
+}
+
+.info-detalhada {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.link-voltar {
+    font-family: 'fonte_astro', sans-serif;
+    color: #888;
+    text-decoration: none;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    display: inline-block;
+}
+
+.link-voltar:hover {
+    color: #fff;
+}
+
+.info-detalhada h1 {
+    font-family: 'fonte_astro', sans-serif;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.preco-destaque {
+    font-size: 2.5rem;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    color: #27ae60;
+    margin-bottom: 2rem;
+}
+
+.descricao-longa {
+    color: #bbb;
+    margin-bottom: 3rem;
+    font-size: 1.1rem;
+}
+
+.descricao-longa p {
+    margin-bottom: 1rem;
+}
+
+.descricao-longa ul {
+    list-style-position: inside;
+}
+
+.btn-grande {
+    font-family: 'fonte_astro', sans-serif;
+    font-size: 1.2rem;
+    padding: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.seletor-tamanhos {
+    margin-bottom: 2rem; 
+}
+
+.titulo-tamanhos {
+    display: block;
+    margin-bottom: 0.8rem;
+    color: #bbb;
+    font-size: 0.95rem;
+}
+
+.botoes-tamanho {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap; 
+}
+
+.btn-tamanho {
+    background-color: transparent;
+    color: #fff;
+    border: 2px solid #333;
+    border-radius: 4px;
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-tamanho:hover {
+    border-color: #888;
+}
+
+.btn-tamanho.selecionado {
+    background-color: #fff;
+    color: #000;
+    border-color: #fff;
+}
+
+.topo-seletor {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+}
+
+.topo-seletor .titulo-tamanhos {
+    margin-bottom: 0; 
+}
+
+.link-tabela {
+    
+    color: #888;
+    text-decoration: underline;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+}
+
+.link-tabela:hover {
+    color: #fff;
+}
+
+.container-tabela {
+    max-width: 800px;
+    margin: 4rem auto;
+    padding: 0 2rem 4rem 2rem;
+    text-align: center;
+}
+
+.container-tabela h2 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    color: #fff;
+}
+
+.container-tabela p {
+    color: #bbb;
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
+}
+
+.tabela-responsiva {
+    overflow-x: auto;
+}
+
+.container-tabela table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #111; 
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #333;
+}
+
+.container-tabela th, 
+.container-tabela td {
+    padding: 1.2rem;
+    border-bottom: 1px solid #333;
+    text-align: center;
+    color: #ddd;
+}
+
+.container-tabela th {
+    background-color: #222;
+    color: #fff;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
+.container-tabela tr:last-child td {
+    border-bottom: none;
+}
+
+.container-tabela tr:hover td {
+    background-color: #1a1a1a; 
+    color: #fff;
+}
+
+.microcopy-botao {
+    font-size: 0.85rem;
+    color: #888;
+    text-align: center;
+    margin-top: 0.6rem;
+    font-weight: normal;
+}
+
+.barra-fixa-mobile {
+    display: none; 
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #111;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #333;
+    z-index: 1000; 
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.6); 
+}
+
+.preco-fixo {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #27ae60;
+}
+
+.barra-fixa-mobile .btn-comprar {
+    margin: 0;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+}
+
+@media (max-width: 800px) {
+    .container-produto {
+        flex-direction: column; 
+        gap: 2rem;
+        padding: 0 1rem;
     }
+    
+    .info-detalhada h1 {
+        font-size: 1.5rem;
+    }
+
+    .galeria-produto {
+        flex-direction: column-reverse; 
+    }
+    
+    .miniaturas {
+        flex-direction: row; 
+        overflow-x: auto; 
+    }
+
+    .barra-fixa-mobile {
+        display: flex; 
+    }
+    
+    body {
+        padding-bottom: 90px; 
+    }
+}
+
+.hero-text {
+    text-align: center;
+    margin-top: 2rem;
+    padding: 0 1rem;
+}
+
+.hero-text h1 {
+    font-family: 'fonte_astro3', sans-serif;
+    font-size: 2.5rem;
+    letter-spacing: 3px;
+    color: #fff;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+
+.hero-text p {
+    color: #888;
+    font-size: 1.1rem;
+}
+
+main.drop-exclusivo {
+    display: block; 
+    max-width: 450px; 
+    margin: 2rem auto 4rem auto; 
+    padding: 0 1rem;
+}
+
+main.drop-exclusivo .cartao-produto {
+    width: 100%;
+}
+
+footer {
+    border-top: 1px solid #333;
+    padding: 4rem 2rem;
+    text-align: center;
+    margin-top: 2rem;
+    background-color: #0a0a0a;
+}
+
+.manifesto {
+    max-width: 600px;
+    margin: 0 auto 3rem auto;
+}
+
+.manifesto h3 {
+    font-size: 1.5rem;
+    color: #fff;
+    letter-spacing: 2px;
+    margin-bottom: 1rem;
+}
+
+.manifesto p {
+    color: #bbb;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.redes-sociais p {
+    color: #888;
+    margin-bottom: 0.5rem;
+}
+
+.link-insta {
+    display: inline-block;
+    color: #fff;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 1.2rem;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.link-insta:hover {
+    color: #27ae60;
+    border-bottom-color: #27ae60;
+}
+
+.linha-um {
+    font-family: 'fonte_astro3', sans-serif;
+    white-space: nowrap; 
 }
