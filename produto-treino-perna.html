@@ -221,16 +221,20 @@
         }
 
         async function carregarEstoque() {
-            const urlPlanilha = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1xrzIy8gVkh7xBoac"; 
+
+            const urlPlanilha = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1xrzIy8gVkh7xBoacvmWeE3IWFaul9jdinG_pLBdjKtLuJfCoo_ILKV8ZMaISqa8vX5B9KRqElcEb/pub?output=csv"; 
 
             try {
                 const resposta = await fetch(urlPlanilha);
                 const dados = await resposta.text();
+
                 const linhas = dados.split('\n');
+
                 const botoes = document.querySelectorAll('.btn-tamanho');
 
                 for (let i = 1; i < linhas.length; i++) {
                     const colunas = linhas[i].split(','); 
+                    
                     if (colunas.length >= 2) {
                         const tamanhoPlanilha = colunas[0].trim();
                         const quantidadePlanilha = parseInt(colunas[1].trim());
@@ -239,14 +243,14 @@
                             if (botao.innerText.trim() === tamanhoPlanilha) {
                                 if (quantidadePlanilha <= 0) {
                                     botao.disabled = true;
-                                    botao.title = "Tamanho Esgotado";
+                                    botao.title = "Tamanho Esgotado"; 
                                 }
                             }
                         });
                     }
                 }
             } catch (erro) {
-                console.error("Erro ao carregar o estoque da planilha:", erro);
+                console.error("Erro ao carregar o stock da planilha:", erro);
             }
         }
 
