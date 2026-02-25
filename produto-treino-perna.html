@@ -70,11 +70,11 @@
                 </div>
             </div>
 
-            <a href="https://wa.me/5521983000355?text=Fala!%20Tudo%20bem?%20Gostei%20da%20Oversized%20Treino%20de%20Perna%20e%20quero%20garantir%20a%20minha." id="btn-whatsapp" target="_blank" class="btn-comprar btn-grande">
-                Comprar via WhatsApp
-            </a>
+            <button id="btn-comprar-principal" class="btn-comprar btn-grande" onclick="irParaCheckout()">
+                Finalizar Compra
+            </button>
 
-            <p class="microcopy-botao">🔒 Compra segura. Entrega e pagamento pelo chat.</p>
+            <p class="microcopy-botao">🔒 Compra segura. Pagamento pelo Mercado Pago.</p>
         </section>
     </main>
 
@@ -130,9 +130,9 @@
 
     <div class="barra-fixa-mobile">
         <div class="preco-fixo">R$ 109,90</div>
-        <a href="https://wa.me/5521983000355?text=Fala!%20Tudo%20bem?%20Gostei%20da%20Oversized%20Treino%20de%20Perna%20e%20quero%20garantir%20a%20minha." id="btn-whatsapp-mobile" target="_blank" class="btn-comprar">
-            Comprar
-        </a>
+        <button id="btn-comprar-principal" class="btn-comprar btn-grande" onclick="irParaCheckout()">
+            Finalizar Compra
+        </button>
     </div>
 
     <script>
@@ -200,23 +200,6 @@
             atualizarLinkWhatsApp();
         }
 
-        function atualizarLinkWhatsApp() {
-            const btnWhatsapp = document.getElementById('btn-whatsapp');
-            const btnWhatsappMobile = document.getElementById('btn-whatsapp-mobile'); // Pega o botão novo
-            let mensagemFinal = mensagemPadrao;
-
-            // Se o usuário tiver um tamanho escolhido, muda a mensagem
-            if (tamanhoEscolhido !== null) {
-                mensagemFinal = `Fala! Tudo bem? Quero garantir a Oversized Treino de Perna no tamanho ${tamanhoEscolhido}.`;
-            }
-
-            const linkPronto = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagemFinal)}`;
-            
-            // Atualiza os links dos dois botões
-            if (btnWhatsapp) btnWhatsapp.href = linkPronto;
-            if (btnWhatsappMobile) btnWhatsappMobile.href = linkPronto;
-        }
-
         function rolarParaTabela(event) {
             event.preventDefault(); 
             
@@ -231,6 +214,82 @@
                 top: posicaoExata,
                 behavior: 'smooth'
             });
+        }
+
+        async function carregarEstoque() {
+
+            const urlPlanilha = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1xrzIy8gVkh7xBoacvmWeE3IWFaul9jdinG_pLBdjKtLuJfCoo_ILKV8ZMaISqa8vX5B9KRqElcEb/pub?output=csv"; 
+
+            try {
+                const resposta = await fetch(urlPlanilha);
+                const dados = await resposta.text();
+
+                const linhas = dados.split('\n');
+
+                const botoes = document.querySelectorAll('.btn-tamanho');
+
+                for (let i = 1; i < linhas.length; i++) {
+                    const colunas = linhas[i].split(','); 
+                    
+                    if (colunas.length >= 2) {
+                        const tamanhoPlanilha = colunas[0].trim();
+                        const quantidadePlanilha = parseInt(colunas[1].trim());
+
+                        botoes.forEach(botao => {
+                            if (botao.innerText.trim() === tamanhoPlanilha) {
+                                if (quantidadePlanilha <= 0) {
+                                    botao.disabled = true;
+                                    botao.title = "Tamanho Esgotado"; 
+                                }
+                            }
+                        });
+                    }
+                }
+            } catch (erro) {
+                console.error("Erro ao carregar o stock da planilha:", erro);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', carregarEstoque);
+
+        async function irParaCheckout() {
+            if (!tamanhoEscolhido) {
+                alert("🔥 Selecione o tamanho da sua camisa antes de comprar!");
+                return;
+            }
+
+            const btnPrincipal = document.getElementById('btn-comprar-principal');
+            const textoOriginal = btnPrincipal.innerText;
+            
+            // Efeito visual de carregamento
+            btnPrincipal.innerText = "Redirecionando... ⏳";
+            btnPrincipal.disabled = true;
+
+            try {
+                // Chama a nova API
+                const response = await fetch('/api/checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tamanho: tamanhoEscolhido })
+                });
+
+                const data = await response.json();
+
+                if (data.url_pagamento) {
+                    // A mágica acontece aqui: Joga o cliente pra página do Mercado Pago!
+                    window.location.href = data.url_pagamento;
+                } else {
+                    alert("Erro ao gerar o checkout. Tente novamente.");
+                    btnPrincipal.innerText = textoOriginal;
+                    btnPrincipal.disabled = false;
+                }
+
+            } catch (error) {
+                console.error("Erro:", error);
+                alert("Falha na conexão. Verifique sua internet.");
+                btnPrincipal.innerText = textoOriginal;
+                btnPrincipal.disabled = false;
+            }
         }
     </script>
 </body>

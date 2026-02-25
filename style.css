@@ -362,6 +362,20 @@ header {
     border-color: #fff;
 }
 
+.btn-tamanho:disabled {
+    background-color: #1a1a1a;
+    color: #444;
+    border-color: #333;
+    cursor: not-allowed; 
+    text-decoration: line-through; 
+    transform: none; 
+}
+
+.btn-tamanho:disabled:hover {
+    background-color: #1a1a1a;
+    color: #444;
+    border-color: #333;
+}
 .topo-seletor {
     display: flex;
     justify-content: space-between;
