@@ -61,6 +61,9 @@
                     <span class="titulo-tamanhos">Escolha o tamanho:</span>
                     <a style="cursor: pointer;" class="link-tabela" onclick="rolarParaTabela(event)">📏 Ver Tabela de Medidas</a>
                 </div>
+
+                <p id="erro-tamanho" class="mensagem-erro" style="display: none;">⚠️ Selecione um tamanho para continuar</p>
+
                 <div class="botoes-tamanho">
                     <button class="btn-tamanho" onclick="selecionarTamanho(this, 'P')">P</button>
                     <button class="btn-tamanho" onclick="selecionarTamanho(this, 'M')">M</button>
@@ -194,6 +197,7 @@
                 // Se não estava clicado, marca ele e salva o tamanho escolhido
                 botaoClicado.classList.add('selecionado');
                 tamanhoEscolhido = tamanho;
+                document.getElementById('erro-tamanho').style.display = 'none';
             }
 
             // Passo 3: Chama a função que reescreve o link do WhatsApp
@@ -253,10 +257,15 @@
         document.addEventListener('DOMContentLoaded', carregarEstoque);
 
         async function irParaCheckout() {
+            const erroTamanho = document.getElementById('erro-tamanho');
+
             if (!tamanhoEscolhido) {
-                alert("🔥 Selecione o tamanho da sua camisa antes de comprar!");
+                erroTamanho.style.display = 'block';
+                erroTamanho.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 return;
             }
+
+            erroTamanho.style.display = 'none';
 
             const btnPrincipal = document.getElementById('btn-comprar-principal');
             const textoOriginal = btnPrincipal.innerText;

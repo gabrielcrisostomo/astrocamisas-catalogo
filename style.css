@@ -678,3 +678,24 @@ footer {
     font-weight: bold;
     margin-top: 0.2rem;
 }
+
+.mensagem-erro {
+    background-color: rgba(231, 76, 60, 0.15); 
+    border: 1px solid #e74c3c; 
+    color: #ff6b6b; 
+    font-size: 1.05rem; 
+    font-weight: bold;
+    text-align: center; 
+    padding: 0.8rem 1rem; 
+    border-radius: 6px; 
+    margin-bottom: 1.2rem;
+    width: 100%;
+    box-sizing: border-box; 
+    animation: tremer 0.4s ease-in-out; 
+}
+
+@keyframes tremer {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+}
