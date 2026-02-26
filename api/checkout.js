@@ -5,14 +5,12 @@ export default async function handler(req, res) {
         return res.status(405).json({ erro: 'Método não permitido' });
     }
 
-    // A sua chave secreta configurada na Vercel
     const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
     const preference = new Preference(client);
 
     try {
         const { tamanho } = req.body;
 
-        // Cria a preferência de checkout no Mercado Pago
         const result = await preference.create({
             body: {
                 items: [
@@ -24,17 +22,20 @@ export default async function handler(req, res) {
                         currency_id: 'BRL',
                     }
                 ],
-                // Para onde o Mercado Pago deve mandar o cliente depois de pagar:
                 back_urls: {
-                    success: "https://astrocamisas.com.br", // Pagou com sucesso
-                    failure: "https://astrocamisas.com.br", // Falhou
-                    pending: "https://astrocamisas.com.br"  // Pix aguardando pagamento
+                    success: "https://astrocamisas.com.br/sucesso.html",
+                    failure: "https://astrocamisas.com.br",
+                    pending: "https://astrocamisas.com.br"
                 },
                 auto_return: "approved",
+                // ENVIANDO O TAMANHO ESCONDIDO PARA O WEBHOOK LER DEPOIS
+                metadata: {
+                    tamanho_comprado: tamanho
+                },
+                notification_url: "https://astrocamisas.com.br/api/webhook" 
             }
         });
 
-        // Devolve APENAS o link da página do Mercado Pago
         return res.status(200).json({ url_pagamento: result.init_point });
 
     } catch (error) {
