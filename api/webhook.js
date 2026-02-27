@@ -1,5 +1,4 @@
 const { MercadoPagoConfig, Payment } = require('mercadopago');
-const { google } = require('googleapis');
 const nodemailer = require('nodemailer');
 
 export default async function handler(req, res) {
@@ -50,68 +49,22 @@ export default async function handler(req, res) {
 }
 
 async function descontarEstoquePlanilha(tamanhoComprado) {
-    if (!process.env.GOOGLE_CLIENT_EMAIL || !process.env.GOOGLE_PRIVATE_KEY) {
-        console.error("❌ ERRO: Variáveis do Google ausentes na Vercel!");
-        return;
-    }
-
-    const privateKey = process.env.GOOGLE_PRIVATE_KEY
-        .replace(/\\n/g, '\n')
-        .replace(/^"|"$/g, '') 
-        .replace(/'/g, '');    
-
-    const auth = new google.auth.JWT(
-        process.env.GOOGLE_CLIENT_EMAIL,
-        null,
-        process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-        ['https://www.googleapis.com/auth/spreadsheets']
-    );
-
-    const sheets = google.sheets({ version: 'v4', auth });
-    
-    // ATENÇÃO: Verifique se este ID está preenchido no seu código!
-    const SPREADSHEET_ID = '1K0stGKAKR9db6F0yg-y9KE3Gv7F3eWZEMXOV6UMiafs'; 
-    const NOME_DA_ABA = 'Página1'; // Mude para 'Página 1' se tiver espaço no nome da aba
+    // COLOQUE AQUI A URL QUE VOCÊ COPIOU DO APPS SCRIPT NA ETAPA 1
+    const urlAppsScript = "https://script.google.com/macros/s/AKfycbxTl1yDr4bZatMTVtvDYxP2dUKi22kaKWLTLRUTefFQLDCs3OJG0YzrWmjycYvjpxcaAQ/exec"; 
 
     try {
-        const response = await sheets.spreadsheets.values.get({
-            spreadsheetId: SPREADSHEET_ID,
-            range: `${NOME_DA_ABA}!A:B`, 
+        console.log(`Enviando ordem para diminuir o tamanho ${tamanhoComprado} na planilha...`);
+        
+        const resposta = await fetch(urlAppsScript, {
+            method: 'POST',
+            body: JSON.stringify({ tamanho: tamanhoComprado })
         });
+        
+        const resultado = await resposta.text();
+        console.log("Resposta da Planilha:", resultado);
 
-        const linhas = response.data.values;
-        if (!linhas || linhas.length === 0) {
-            console.error("❌ Planilha vazia ou não encontrada.");
-            return;
-        }
-
-        for (let i = 0; i < linhas.length; i++) {
-            const linha = linhas[i];
-            const tamanhoPlanilha = linha[0]; // Coluna A (TAMANHO)
-
-            if (tamanhoPlanilha === tamanhoComprado) {
-                const quantidadeAtual = parseInt(linha[1]); // Coluna B (QUANTIDADE)
-                console.log(`Encontrou tamanho ${tamanhoPlanilha}. Estoque atual: ${quantidadeAtual}`);
-                
-                if (quantidadeAtual > 0) {
-                    const novaQuantidade = quantidadeAtual - 1;
-                    const numeroDaLinha = i + 1; 
-
-                    await sheets.spreadsheets.values.update({
-                        spreadsheetId: SPREADSHEET_ID,
-                        range: `${NOME_DA_ABA}!B${numeroDaLinha}`,
-                        valueInputOption: 'RAW',
-                        requestBody: { values: [[novaQuantidade]] }
-                    });
-                    console.log(`🎉 Sucesso! Estoque do tamanho ${tamanhoComprado} atualizado para ${novaQuantidade}.`);
-                } else {
-                    console.log(`⚠️ O estoque de ${tamanhoComprado} já está zerado!`);
-                }
-                break; 
-            }
-        }
     } catch (erro) {
-        console.error("❌ Erro ao alterar planilha:", erro.message);
+        console.error("❌ Erro ao avisar a planilha:", erro.message);
     }
 }
 
