@@ -23,15 +23,15 @@ export default async function handler(req, res) {
                     }
                 ],
                 back_urls: {
-                    success: "https://astrocamisas.com.br/sucesso.html",
-                    failure: "https://astrocamisas.com.br",
-                    pending: "https://astrocamisas.com.br/sucesso.html"
+                    success: "https://www.astrocamisas.com.br/sucesso.html",
+                    failure: "https://www.astrocamisas.com.br",
+                    pending: "https://www.astrocamisas.com.br/sucesso.html"
                 },
                 auto_return: "approved",
                 metadata: {
                     tamanho_comprado: tamanho
                 },
-                notification_url: "https://astrocamisas.com.br/api/webhook" 
+                notification_url: "https://www.astrocamisas.com.br/api/webhook" 
             }
         });
 
