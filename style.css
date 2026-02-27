@@ -638,7 +638,7 @@ footer {
 }
 
 .tag-escassez {
-    background-color: #e74c3c; /* Vermelho de urgência */
+    background-color: #e74c3c; 
     color: #fff;
     font-size: 0.75rem;
     font-weight: bold;

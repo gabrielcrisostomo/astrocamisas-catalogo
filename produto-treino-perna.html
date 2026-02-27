@@ -139,7 +139,6 @@
     </div>
 
     <script>
-        // --- LÓGICA DA GALERIA DE IMAGENS ---
         function trocarImagem(elementoMiniatura) {
             document.getElementById('img-destaque').src = elementoMiniatura.src;
             let miniaturas = document.querySelectorAll('.miniatura');
@@ -150,70 +149,51 @@
         const containerImagem = document.querySelector('.imagem-principal');
         const imagemDestaque = document.getElementById('img-destaque');
 
-        // Quando o mouse se move DENTRO da imagem
         containerImagem.addEventListener('mousemove', function(e) {
-            // Pega o tamanho e a posição exata da caixa na tela
             const rect = containerImagem.getBoundingClientRect();
             
-            // Calcula a posição do mouse em relação à caixa
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
-
-            // Transforma essa posição em porcentagem (de 0% a 100%)
             const xPorcentagem = (x / rect.width) * 100;
             const yPorcentagem = (y / rect.height) * 100;
 
-            // Move o "eixo" do zoom para onde o mouse está
             imagemDestaque.style.transformOrigin = `${xPorcentagem}% ${yPorcentagem}%`;
             
-            // Aplica o zoom (Neste caso, 2.5x o tamanho original. Pode aumentar se quiser)
             imagemDestaque.style.transform = "scale(2.5)";
         });
 
-        // Quando o mouse SAI da imagem, volta ao normal
         containerImagem.addEventListener('mouseleave', function() {
             imagemDestaque.style.transformOrigin = "center center";
             imagemDestaque.style.transform = "scale(1)";
         });
 
-        // --- LÓGICA DE ESCOLHA DE TAMANHO E WHATSAPP ---
-        const numeroWhatsApp = "5521983000355"; // Seu número configurado
+        const numeroWhatsApp = "5521983000355"; 
         const mensagemPadrao = "Fala! Tudo bem? Estou na página da Oversized Treino de Perna e quero garantir a minha.";
-        let tamanhoEscolhido = null; // Começa sem nenhum tamanho selecionado
+        let tamanhoEscolhido = null; 
 
         function selecionarTamanho(botaoClicado, tamanho) {
-            // Verifica se o botão que o usuário clicou já estava selecionado
             const jaEstavaSelecionado = botaoClicado.classList.contains('selecionado');
             
-            // Passo 1: Limpa a seleção de TODOS os botões
             let todosOsBotoes = document.querySelectorAll('.btn-tamanho');
             todosOsBotoes.forEach(btn => btn.classList.remove('selecionado'));
 
-            // Passo 2: Aplica a lógica de "liga/desliga"
             if (jaEstavaSelecionado) {
-                // Se já estava clicado, apenas desmarca (tamanho volta a ser null)
                 tamanhoEscolhido = null;
             } else {
-                // Se não estava clicado, marca ele e salva o tamanho escolhido
                 botaoClicado.classList.add('selecionado');
                 tamanhoEscolhido = tamanho;
                 document.getElementById('erro-tamanho').style.display = 'none';
             }
 
-            // Passo 3: Chama a função que reescreve o link do WhatsApp
             atualizarLinkWhatsApp();
         }
 
         function rolarParaTabela(event) {
             event.preventDefault(); 
             
-            // 1. Encontra a tabela na página
             const tabela = document.getElementById('tabela-medidas');
-            
-            // 2. Calcula exatamente em qual pixel da tela a tabela começa
             const posicaoExata = tabela.getBoundingClientRect().top + window.scrollY;
             
-            // 3. Manda a janela inteira rolar até esse pixel suavemente
             window.scrollTo({
                 top: posicaoExata,
                 behavior: 'smooth'
@@ -221,39 +201,42 @@
         }
 
         async function carregarEstoque() {
-
             const urlPlanilha = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1xrzIy8gVkh7xBoacvmWeE3IWFaul9jdinG_pLBdjKtLuJfCoo_ILKV8ZMaISqa8vX5B9KRqElcEb/pub?output=csv"; 
 
             try {
                 const resposta = await fetch(urlPlanilha);
                 const dados = await resposta.text();
-
-                const linhas = dados.split('\n');
-
+                const linhas = dados.split(/\r?\n/);
                 const botoes = document.querySelectorAll('.btn-tamanho');
 
                 for (let i = 1; i < linhas.length; i++) {
+                    if (!linhas[i].trim()) continue; 
+
                     const colunas = linhas[i].split(','); 
                     
                     if (colunas.length >= 2) {
-                        const tamanhoPlanilha = colunas[0].trim();
-                        const quantidadePlanilha = parseInt(colunas[1].trim());
+                        const tamanhoPlanilha = colunas[0].trim().toUpperCase();
+                        const quantidadePlanilha = parseInt(colunas[1].trim(), 10);
 
                         botoes.forEach(botao => {
-                            if (botao.innerText.trim() === tamanhoPlanilha) {
-                                if (quantidadePlanilha <= 0) {
+                            if (botao.innerText.trim().toUpperCase() === tamanhoPlanilha) {
+                                if (quantidadePlanilha <= 0 || isNaN(quantidadePlanilha)) {
                                     botao.disabled = true;
                                     botao.title = "Tamanho Esgotado"; 
+                                    botao.style.opacity = '0.4';
+                                    botao.style.cursor = 'not-allowed';
+                                    botao.style.backgroundColor = '#e0e0e0';
+                                    botao.style.color = '#999';
+                                    botao.onclick = null; 
                                 }
                             }
                         });
                     }
                 }
             } catch (erro) {
-                console.error("Erro ao carregar o stock da planilha:", erro);
+                console.error("Erro ao carregar o estoque da planilha:", erro);
             }
         }
-
         document.addEventListener('DOMContentLoaded', carregarEstoque);
 
         async function irParaCheckout() {
@@ -270,12 +253,10 @@
             const btnPrincipal = document.getElementById('btn-comprar-principal');
             const textoOriginal = btnPrincipal.innerText;
             
-            // Efeito visual de carregamento
             btnPrincipal.innerText = "Redirecionando... ⏳";
             btnPrincipal.disabled = true;
 
             try {
-                // Chama a nova API
                 const response = await fetch('/api/checkout', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -285,7 +266,6 @@
                 const data = await response.json();
 
                 if (data.url_pagamento) {
-                    // A mágica acontece aqui: Joga o cliente pra página do Mercado Pago!
                     window.location.href = data.url_pagamento;
                 } else {
                     alert("Erro ao gerar o checkout. Tente novamente.");

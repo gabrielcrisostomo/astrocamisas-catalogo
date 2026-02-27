@@ -1,6 +1,12 @@
 const { MercadoPagoConfig, Payment } = require('mercadopago');
 const { google } = require('googleapis');
-const nodemailer = require('nodemailer'); // <-- Nova biblioteca
+const nodemailer = require('nodemailer'); 
+
+export default async function handler(req, res) {
+    console.log("🔔 WEBHOOK CHAMADO!", req.query, req.body);
+
+    res.status(200).send('OK');
+}
 
 export default async function handler(req, res) {
     res.status(200).send('OK');
@@ -16,7 +22,7 @@ export default async function handler(req, res) {
 
             if (dadosPagamento.status === 'approved') {
                 const tamanho = dadosPagamento.metadata.tamanho_comprado;
-                const emailCliente = dadosPagamento.payer.email; // Pega o email do cliente
+                const emailCliente = dadosPagamento.payer.email; 
                 const nomeCliente = dadosPagamento.payer.first_name || 'Astro';
 
                 // 1. Desconta o estoque na planilha
@@ -33,24 +39,19 @@ export default async function handler(req, res) {
     }
 }
 
-// --- Função que conecta no Google Sheets ---
 async function descontarEstoquePlanilha(tamanhoComprado) {
-    // Autenticação usando as Variáveis de Ambiente
     const auth = new google.auth.JWT(
         process.env.GOOGLE_CLIENT_EMAIL,
         null,
-        process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'), // Arruma a quebra de linha da chave
+        process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'), 
         ['https://www.googleapis.com/auth/spreadsheets']
     );
 
     const sheets = google.sheets({ version: 'v4', auth });
     
-    // O ID da sua planilha (fica na URL original do Google Sheets entre /d/ e /edit)
-    const SPREADSHEET_ID = 'COLOQUE_AQUI_O_ID_DA_SUA_PLANILHA'; 
-    const NOME_DA_ABA = 'Página1'; // Mude se o nome da sua aba for diferente (ex: Estoque)
-
+    const SPREADSHEET_ID = '1K0stGKAKR9db6F0yg-y9KE3Gv7F3eWZEMXOV6UMiafs'; 
+    const NOME_DA_ABA = 'Página1'; 
     try {
-        // 1. Lê a planilha atual (Pega as Colunas A e B)
         const response = await sheets.spreadsheets.values.get({
             spreadsheetId: SPREADSHEET_ID,
             range: `${NOME_DA_ABA}!A:B`, // A = Tamanho, B = Quantidade
@@ -59,23 +60,21 @@ async function descontarEstoquePlanilha(tamanhoComprado) {
         const linhas = response.data.values;
         if (!linhas || linhas.length === 0) return;
 
-        // 2. Procura em qual linha está o tamanho comprado
         for (let i = 0; i < linhas.length; i++) {
             const linha = linhas[i];
-            const tamanhoPlanilha = linha[0]; // Coluna A
+            const tamanhoPlanilha = linha[0]; 
 
             if (tamanhoPlanilha === tamanhoComprado) {
-                const quantidadeAtual = parseInt(linha[1]); // Coluna B
+                const quantidadeAtual = parseInt(linha[1]); 
                 
                 // Se tiver estoque, diminui 1
                 if (quantidadeAtual > 0) {
                     const novaQuantidade = quantidadeAtual - 1;
-                    const numeroDaLinha = i + 1; // Array começa em 0, planilhas em 1
+                    const numeroDaLinha = i + 1; 
 
-                    // 3. Salva a nova quantidade de volta na planilha
                     await sheets.spreadsheets.values.update({
                         spreadsheetId: SPREADSHEET_ID,
-                        range: `${NOME_DA_ABA}!B${numeroDaLinha}`, // Atualiza SÓ a célula da quantidade
+                        range: `${NOME_DA_ABA}!B${numeroDaLinha}`, 
                         valueInputOption: 'RAW',
                         requestBody: {
                             values: [[novaQuantidade]]
@@ -83,7 +82,7 @@ async function descontarEstoquePlanilha(tamanhoComprado) {
                     });
                     console.log(`Sucesso: Estoque do tamanho ${tamanhoComprado} atualizado para ${novaQuantidade}.`);
                 }
-                break; // Para o loop após encontrar o tamanho
+                break;
             }
         }
     } catch (erro) {
@@ -91,14 +90,13 @@ async function descontarEstoquePlanilha(tamanhoComprado) {
     }
 }
 
-// --- Função que envia o E-mail ---
+
 async function enviarEmailConfirmacao(emailDestino, nome, tamanho) {
-    // Configuração do servidor de e-mail (Exemplo usando Gmail)
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: process.env.EMAIL_LOJA, // Seu email (ex: contato@astrocamisas.com.br)
-            pass: process.env.EMAIL_SENHA   // Sua senha de aplicativo do Gmail
+            user: process.env.EMAIL_LOJA, 
+            pass: process.env.EMAIL_SENHA   
         }
     });
 

@@ -25,10 +25,9 @@ export default async function handler(req, res) {
                 back_urls: {
                     success: "https://astrocamisas.com.br/sucesso.html",
                     failure: "https://astrocamisas.com.br",
-                    pending: "https://astrocamisas.com.br"
+                    pending: "https://astrocamisas.com.br/sucesso.html"
                 },
                 auto_return: "approved",
-                // ENVIANDO O TAMANHO ESCONDIDO PARA O WEBHOOK LER DEPOIS
                 metadata: {
                     tamanho_comprado: tamanho
                 },
