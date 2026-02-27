@@ -49,8 +49,7 @@ export default async function handler(req, res) {
 }
 
 async function descontarEstoquePlanilha(tamanhoComprado) {
-    // COLOQUE AQUI A URL QUE VOCÊ COPIOU DO APPS SCRIPT NA ETAPA 1
-    const urlAppsScript = "https://script.google.com/macros/s/AKfycbxTl1yDr4bZatMTVtvDYxP2dUKi22kaKWLTLRUTefFQLDCs3OJG0YzrWmjycYvjpxcaAQ/exec"; 
+    const urlAppsScript = "https://script.google.com/macros/s/AKfycbyFXNmpBu9hZCsSw6nkJw0G9Fe9Hw8kDUW6oXiDgLypHNgGXqHDhfdsGLofL2X6FLLYJw/exec"; 
 
     try {
         console.log(`Enviando ordem para diminuir o tamanho ${tamanhoComprado} na planilha...`);
