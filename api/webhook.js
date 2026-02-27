@@ -49,8 +49,17 @@ export default async function handler(req, res) {
     res.status(200).send('OK');
 }
 
-// --- Função que conecta no Google Sheets ---
 async function descontarEstoquePlanilha(tamanhoComprado) {
+    if (!process.env.GOOGLE_CLIENT_EMAIL || !process.env.GOOGLE_PRIVATE_KEY) {
+        console.error("❌ ERRO: Variáveis do Google ausentes na Vercel!");
+        return;
+    }
+
+    const privateKey = process.env.GOOGLE_PRIVATE_KEY
+        .replace(/\\n/g, '\n')
+        .replace(/^"|"$/g, '') 
+        .replace(/'/g, '');    
+
     const auth = new google.auth.JWT(
         process.env.GOOGLE_CLIENT_EMAIL,
         null,
