@@ -201,40 +201,31 @@
         }
 
         async function carregarEstoque() {
-            const urlPlanilha = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1xrzIy8gVkh7xBoacvmWeE3IWFaul9jdinG_pLBdjKtLuJfCoo_ILKV8ZMaISqa8vX5B9KRqElcEb/pub?output=csv"; 
+            const urlAppsScript = "https://script.google.com/macros/s/AKfycbzTPM_56Dixlp6RlM3uXERRhGJFD0XUGzmZyNG9cfVMEKpqyK96sNBm-_i9K-_JU7HK9A/exec"; 
 
             try {
-                const resposta = await fetch(urlPlanilha);
-                const dados = await resposta.text();
-                const linhas = dados.split(/\r?\n/);
+                const resposta = await fetch(urlAppsScript);
+                const dados = await resposta.json();
+
                 const botoes = document.querySelectorAll('.btn-tamanho');
 
-                for (let i = 1; i < linhas.length; i++) {
-                    if (!linhas[i].trim()) continue; 
-
-                    const colunas = linhas[i].split(','); 
-                    
-                    if (colunas.length >= 2) {
-                        const tamanhoPlanilha = colunas[0].trim().toUpperCase();
-                        const quantidadePlanilha = parseInt(colunas[1].trim(), 10);
-
-                        botoes.forEach(botao => {
-                            if (botao.innerText.trim().toUpperCase() === tamanhoPlanilha) {
-                                if (quantidadePlanilha <= 0 || isNaN(quantidadePlanilha)) {
-                                    botao.disabled = true;
-                                    botao.title = "Tamanho Esgotado"; 
-                                    botao.style.opacity = '0.4';
-                                    botao.style.cursor = 'not-allowed';
-                                    botao.style.backgroundColor = '#e0e0e0';
-                                    botao.style.color = '#999';
-                                    botao.onclick = null; 
-                                }
+                dados.forEach(item => {
+                    botoes.forEach(botao => {
+                        if (botao.innerText.trim().toUpperCase() === item.tamanho) {
+                            if (item.quantidade <= 0) {
+                                botao.disabled = true;
+                                botao.title = "Tamanho Esgotado"; 
+                                botao.style.opacity = '0.4';
+                                botao.style.cursor = 'not-allowed';
+                                botao.style.backgroundColor = '#e0e0e0';
+                                botao.style.color = '#999';
+                                botao.onclick = null; 
                             }
-                        });
-                    }
-                }
+                        }
+                    });
+                });
             } catch (erro) {
-                console.error("Erro ao carregar o estoque da planilha:", erro);
+                console.error("Erro ao carregar o estoque em tempo real:", erro);
             }
         }
         document.addEventListener('DOMContentLoaded', carregarEstoque);
