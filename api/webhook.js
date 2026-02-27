@@ -1,96 +1,111 @@
 const { MercadoPagoConfig, Payment } = require('mercadopago');
 const { google } = require('googleapis');
-const nodemailer = require('nodemailer'); 
+const nodemailer = require('nodemailer');
 
 export default async function handler(req, res) {
-    console.log("🔔 WEBHOOK CHAMADO!", req.query, req.body);
+    // 1. LOG IMEDIATO: Isso TEM que aparecer na Vercel quando o MP bater aqui
+    console.log("🔔 WEBHOOK ACIONADO!", "Query:", req.query, "Body:", req.body);
 
-    res.status(200).send('OK');
-}
-
-export default async function handler(req, res) {
+    // 2. Resposta rápida para o MP parar de tentar enviar o aviso repetidas vezes
     res.status(200).send('OK');
 
-    if (req.query.type === 'payment' || req.body.type === 'payment') {
-        const paymentId = req.query['data.id'] || req.body.data.id;
+    // 3. Capturando o ID do pagamento de todas as formas possíveis que o MP usa
+    let paymentId = req.query['data.id'] || req.query.id || (req.body && req.body.data && req.body.data.id);
+    let action = req.query.topic || req.query.type || (req.body && req.body.action) || (req.body && req.body.type);
 
+    if ((action === 'payment' || action === 'payment.created' || action === 'payment.updated') && paymentId) {
+        console.log("💳 Processando Pagamento ID:", paymentId);
+        
         try {
             const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
             const payment = new Payment(client);
             
             const dadosPagamento = await payment.get({ id: paymentId });
+            console.log("✅ Status do Pagamento:", dadosPagamento.status);
 
             if (dadosPagamento.status === 'approved') {
                 const tamanho = dadosPagamento.metadata.tamanho_comprado;
-                const emailCliente = dadosPagamento.payer.email; 
+                const emailCliente = dadosPagamento.payer.email;
                 const nomeCliente = dadosPagamento.payer.first_name || 'Astro';
 
-                // 1. Desconta o estoque na planilha
-                await descontarEstoquePlanilha(tamanho);
+                console.log(`👕 Comprador: ${emailCliente} | Tamanho: ${tamanho}`);
 
-                // 2. Envia o e-mail de confirmação
+                if (tamanho) {
+                    await descontarEstoquePlanilha(tamanho);
+                } else {
+                    console.error("❌ Erro: O tamanho não veio no metadata do pagamento!");
+                }
+
                 if (emailCliente) {
                     await enviarEmailConfirmacao(emailCliente, nomeCliente, tamanho);
                 }
             }
         } catch (error) {
-            console.error("Erro ao processar Webhook:", error);
+            console.error("❌ Erro grave ao processar o Pagamento no Webhook:", error);
         }
+    } else {
+        console.log("⚠️ Notificação ignorada (Não é um evento de pagamento válido ou falta ID).");
     }
 }
 
+// --- Função que conecta no Google Sheets ---
 async function descontarEstoquePlanilha(tamanhoComprado) {
     const auth = new google.auth.JWT(
         process.env.GOOGLE_CLIENT_EMAIL,
         null,
-        process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'), 
+        process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
         ['https://www.googleapis.com/auth/spreadsheets']
     );
 
     const sheets = google.sheets({ version: 'v4', auth });
     
+    // ATENÇÃO: Verifique se este ID está preenchido no seu código!
     const SPREADSHEET_ID = '1K0stGKAKR9db6F0yg-y9KE3Gv7F3eWZEMXOV6UMiafs'; 
-    const NOME_DA_ABA = 'Página1'; 
+    const NOME_DA_ABA = 'Página1'; // Mude para 'Página 1' se tiver espaço no nome da aba
+
     try {
         const response = await sheets.spreadsheets.values.get({
             spreadsheetId: SPREADSHEET_ID,
-            range: `${NOME_DA_ABA}!A:B`, // A = Tamanho, B = Quantidade
+            range: `${NOME_DA_ABA}!A:B`, 
         });
 
         const linhas = response.data.values;
-        if (!linhas || linhas.length === 0) return;
+        if (!linhas || linhas.length === 0) {
+            console.error("❌ Planilha vazia ou não encontrada.");
+            return;
+        }
 
         for (let i = 0; i < linhas.length; i++) {
             const linha = linhas[i];
-            const tamanhoPlanilha = linha[0]; 
+            const tamanhoPlanilha = linha[0]; // Coluna A (TAMANHO)
 
             if (tamanhoPlanilha === tamanhoComprado) {
-                const quantidadeAtual = parseInt(linha[1]); 
+                const quantidadeAtual = parseInt(linha[1]); // Coluna B (QUANTIDADE)
+                console.log(`Encontrou tamanho ${tamanhoPlanilha}. Estoque atual: ${quantidadeAtual}`);
                 
-                // Se tiver estoque, diminui 1
                 if (quantidadeAtual > 0) {
                     const novaQuantidade = quantidadeAtual - 1;
                     const numeroDaLinha = i + 1; 
 
                     await sheets.spreadsheets.values.update({
                         spreadsheetId: SPREADSHEET_ID,
-                        range: `${NOME_DA_ABA}!B${numeroDaLinha}`, 
+                        range: `${NOME_DA_ABA}!B${numeroDaLinha}`,
                         valueInputOption: 'RAW',
-                        requestBody: {
-                            values: [[novaQuantidade]]
-                        }
+                        requestBody: { values: [[novaQuantidade]] }
                     });
-                    console.log(`Sucesso: Estoque do tamanho ${tamanhoComprado} atualizado para ${novaQuantidade}.`);
+                    console.log(`🎉 Sucesso! Estoque do tamanho ${tamanhoComprado} atualizado para ${novaQuantidade}.`);
+                } else {
+                    console.log(`⚠️ O estoque de ${tamanhoComprado} já está zerado!`);
                 }
-                break;
+                break; 
             }
         }
     } catch (erro) {
-        console.error("Erro ao alterar planilha:", erro);
+        console.error("❌ Erro ao alterar planilha:", erro.message);
     }
 }
 
-
+// --- Função que envia o E-mail ---
 async function enviarEmailConfirmacao(emailDestino, nome, tamanho) {
     const transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -116,8 +131,8 @@ async function enviarEmailConfirmacao(emailDestino, nome, tamanho) {
 
     try {
         await transporter.sendMail(mensagem);
-        console.log(`E-mail de confirmação enviado para ${emailDestino}`);
+        console.log(`📧 E-mail de confirmação enviado para ${emailDestino}`);
     } catch (error) {
-        console.error("Erro ao enviar e-mail:", error);
+        console.error("❌ Erro ao enviar e-mail:", error.message);
     }
 }
