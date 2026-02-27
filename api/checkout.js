@@ -28,6 +28,7 @@ export default async function handler(req, res) {
                     pending: "https://www.astrocamisas.com.br/sucesso.html"
                 },
                 auto_return: "approved",
+                external_reference: tamanho,
                 metadata: {
                     tamanho_comprado: tamanho
                 },

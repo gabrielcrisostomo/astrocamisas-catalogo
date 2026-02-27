@@ -7,7 +7,7 @@ export default async function handler(req, res) {
     console.log("🔔 WEBHOOK ACIONADO!", "Query:", req.query, "Body:", req.body);
 
     // 2. Resposta rápida para o MP parar de tentar enviar o aviso repetidas vezes
-    res.status(200).send('OK');
+    
 
     // 3. Capturando o ID do pagamento de todas as formas possíveis que o MP usa
     let paymentId = req.query['data.id'] || req.query.id || (req.body && req.body.data && req.body.data.id);
@@ -46,6 +46,7 @@ export default async function handler(req, res) {
     } else {
         console.log("⚠️ Notificação ignorada (Não é um evento de pagamento válido ou falta ID).");
     }
+    res.status(200).send('OK');
 }
 
 // --- Função que conecta no Google Sheets ---
