@@ -36,6 +36,7 @@
 
 html {
     scroll-behavior: smooth; 
+    overscroll-behavior: none;
 }
 
 body {
@@ -43,6 +44,7 @@ body {
     color: #fff;
     line-height: 1.6;
     overflow-x: hidden;
+    overscroll-behavior: none;
 }
 
 header {
