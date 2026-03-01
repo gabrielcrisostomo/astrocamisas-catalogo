@@ -2,11 +2,18 @@ const { MercadoPagoConfig, Payment } = require('mercadopago');
 const nodemailer = require('nodemailer');
 const { createClient } = require('@supabase/supabase-js');
 
+const pagamentosProcessados = new Set();
+
 export default async function handler(req, res) {
     console.log("🔔 WEBHOOK ACIONADO!", "Query:", req.query, "Body:", req.body);
 
     let paymentId = req.query['data.id'] || req.query.id || (req.body && req.body.data && req.body.data.id);
     let action = req.query.topic || req.query.type || (req.body && req.body.action) || (req.body && req.body.type);
+
+    if (paymentId && pagamentosProcessados.has(paymentId)) {
+        console.log("⚠️ Pagamento repetido do MP ignorado para não duplicar e-mail:", paymentId);
+        return res.status(200).send('OK'); 
+    }
 
     if ((action === 'payment' || action === 'payment.created' || action === 'payment.updated') && paymentId) {
         console.log("💳 Processando Pagamento ID:", paymentId);
@@ -19,6 +26,9 @@ export default async function handler(req, res) {
             console.log("✅ Status do Pagamento:", dadosPagamento.status);
 
             if (dadosPagamento.status === 'approved') {
+                
+                pagamentosProcessados.add(paymentId);
+
                 const tamanho = dadosPagamento.metadata?.tamanho_comprado;
                 const emailCliente = dadosPagamento.metadata?.email_comprador || dadosPagamento.payer?.email;
                 const nomeCliente = dadosPagamento.payer?.first_name || 'Astro';
@@ -41,6 +51,7 @@ export default async function handler(req, res) {
     } else {
         console.log("⚠️ Notificação ignorada (Não é um evento de pagamento válido ou falta ID).");
     }
+    
     res.status(200).send('OK');
 }
 
@@ -111,7 +122,7 @@ async function enviarEmailConfirmacao(emailDestino, nome, tamanho) {
             <h2>Fala ${nome}, tudo certo?</h2>
             <p>Seu pagamento foi aprovado com sucesso!</p>
             <p>Sua <strong>Oversized Treino de Perna (Tamanho ${tamanho})</strong> já está separada.</p>
-            <p>Em breve enviaremos o código de rastreio para você acompanhar a entrega.</p>
+            <p>Em breve enviaremos mais informações sobre a entrega da sua peça.</p>
             <br>
             <p>Tamo junto,<br>Equipe Astro Camisas</p>
         `
