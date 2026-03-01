@@ -1,14 +1,10 @@
 const { MercadoPagoConfig, Payment } = require('mercadopago');
 const nodemailer = require('nodemailer');
+const { createClient } = require('@supabase/supabase-js');
 
 export default async function handler(req, res) {
-    // 1. LOG IMEDIATO: Isso TEM que aparecer na Vercel quando o MP bater aqui
     console.log("🔔 WEBHOOK ACIONADO!", "Query:", req.query, "Body:", req.body);
 
-    // 2. Resposta rápida para o MP parar de tentar enviar o aviso repetidas vezes
-    
-
-    // 3. Capturando o ID do pagamento de todas as formas possíveis que o MP usa
     let paymentId = req.query['data.id'] || req.query.id || (req.body && req.body.data && req.body.data.id);
     let action = req.query.topic || req.query.type || (req.body && req.body.action) || (req.body && req.body.type);
 
@@ -49,21 +45,51 @@ export default async function handler(req, res) {
 }
 
 async function descontarEstoquePlanilha(tamanhoComprado) {
-    const urlAppsScript = "https://script.google.com/macros/s/AKfycbzTPM_56Dixlp6RlM3uXERRhGJFD0XUGzmZyNG9cfVMEKpqyK96sNBm-_i9K-_JU7HK9A/exec"; 
+    const supabase = createClient(
+        process.env.SUPABASE_URL,
+        process.env.SUPABASE_SERVICE_KEY 
+    );
+
+    const nomeDoProduto = 'Treino de Perna';
 
     try {
-        console.log(`Enviando ordem para diminuir o tamanho ${tamanhoComprado} na planilha...`);
-        
-        const resposta = await fetch(urlAppsScript, {
-            method: 'POST',
-            body: JSON.stringify({ tamanho: tamanhoComprado })
-        });
-        
-        const resultado = await resposta.text();
-        console.log("Resposta da Planilha:", resultado);
+        console.log(`Buscando estoque no Supabase: Produto ${nomeDoProduto}, Tamanho ${tamanhoComprado}...`);
+
+        const { data, error: erroBusca } = await supabase
+            .from('estoque')
+            .select('quantidade')
+            .eq('produto', nomeDoProduto)
+            .eq('tamanho', tamanhoComprado)
+            .single();
+
+        if (erroBusca || !data) {
+            console.error("❌ Erro ao buscar item no Supabase:", erroBusca?.message || "Item não encontrado");
+            return;
+        }
+
+        const quantidadeAtual = data.quantidade;
+        console.log(`Estoque atual no banco: ${quantidadeAtual}`);
+
+        if (quantidadeAtual > 0) {
+            const novaQuantidade = quantidadeAtual - 1;
+
+            const { error: erroAtualizacao } = await supabase
+                .from('estoque')
+                .update({ quantidade: novaQuantidade })
+                .eq('produto', nomeDoProduto)
+                .eq('tamanho', tamanhoComprado);
+
+            if (erroAtualizacao) {
+                console.error("❌ Erro ao atualizar o Supabase:", erroAtualizacao.message);
+            } else {
+                console.log(`🎉 Sucesso! Supabase atualizado. Novo estoque de ${tamanhoComprado}: ${novaQuantidade}`);
+            }
+        } else {
+            console.log(`⚠️ Atenção: Tentativa de baixar estoque já zerado do tamanho ${tamanhoComprado}.`);
+        }
 
     } catch (erro) {
-        console.error("❌ Erro ao avisar a planilha:", erro.message);
+        console.error("❌ Erro grave na função do Supabase:", erro.message);
     }
 }
 

@@ -201,36 +201,39 @@
         }
 
         async function carregarEstoque() {
-            const urlAppsScript = "https://script.google.com/macros/s/AKfycbzTPM_56Dixlp6RlM3uXERRhGJFD0XUGzmZyNG9cfVMEKpqyK96sNBm-_i9K-_JU7HK9A/exec"; 
+            const SUPABASE_URL = "https://wpnocjzczossvhybrefb.supabase.co";
+            const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indwbm9janpjem9zc3ZoeWJyZWZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyMjQ0OTcsImV4cCI6MjA4NzgwMDQ5N30.6BBQIa_5AYsMxnruuP4kO98BMqbQUVoUBWD99LXJNAc";
+
+            const endpoint = `${SUPABASE_URL}/rest/v1/estoque?produto=eq.Treino de Perna&select=tamanho,quantidade`;
 
             try {
-                const resposta = await fetch(urlAppsScript);
-                const dados = await resposta.json();
-
-                const botoes = document.querySelectorAll('.btn-tamanho');
-
-                botoes.forEach(botao => {
-                    const tamanhoBotao = botao.innerText.trim().toUpperCase();
-                    
-                    const itemPlanilha = dados.find(item => 
-                        String(item.tamanho).trim().toUpperCase() === tamanhoBotao
-                    );
-
-                    if (itemPlanilha && Number(itemPlanilha.quantidade) <= 0) {
-                        botao.disabled = true;
-                        
-                        botao.title = "Tamanho Esgotado"; 
-                        botao.style.opacity = '0.4';
-                        botao.style.cursor = 'not-allowed';
-                        botao.style.backgroundColor = '#e0e0e0';
-                        botao.style.color = '#999';
-                        
-                        botao.removeAttribute('onclick'); 
+                const resposta = await fetch(endpoint, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
                     }
                 });
+                
+                const dados = await resposta.json();
+                const botoes = document.querySelectorAll('.btn-tamanho');
 
+                dados.forEach(item => {
+                    botoes.forEach(botao => {
+                        if (botao.innerText.trim().toUpperCase() === item.tamanho.toUpperCase()) {
+                            if (item.quantidade <= 0) {
+                                botao.disabled = true;
+                                botao.title = "Tamanho Esgotado"; 
+                                botao.style.opacity = '0.4';
+                                botao.style.cursor = 'not-allowed';
+                                botao.style.backgroundColor = '#e0e0e0';
+                                botao.style.color = '#999';
+                                botao.onclick = null; 
+                            }
+                        }
+                    });
+                });
             } catch (erro) {
-                console.error("Erro ao carregar o estoque em tempo real:", erro);
+                console.error("Erro ao conectar com Supabase:", erro);
             }
         }
 
