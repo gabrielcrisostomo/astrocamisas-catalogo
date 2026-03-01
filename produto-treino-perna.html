@@ -204,7 +204,7 @@
             const SUPABASE_URL = "https://wpnocjzczossvhybrefb.supabase.co";
             const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indwbm9janpjem9zc3ZoeWJyZWZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyMjQ0OTcsImV4cCI6MjA4NzgwMDQ5N30.6BBQIa_5AYsMxnruuP4kO98BMqbQUVoUBWD99LXJNAc";
 
-            const endpoint = `${SUPABASE_URL}/rest/v1/estoque?produto=eq.Treino de Perna&select=tamanho,quantidade`;
+            const endpoint = `${SUPABASE_URL}/rest/v1/estoque?produto=eq.Treino%20de%20Perna&select=tamanho,quantidade`;
 
             try {
                 const resposta = await fetch(endpoint, {
@@ -215,18 +215,27 @@
                 });
                 
                 const dados = await resposta.json();
+                
+                console.log("Dados do Supabase recebidos:", dados);
+
                 const botoes = document.querySelectorAll('.btn-tamanho');
 
                 dados.forEach(item => {
                     botoes.forEach(botao => {
-                        if (botao.innerText.trim().toUpperCase() === item.tamanho.toUpperCase()) {
-                            if (item.quantidade <= 0) {
+                        if (botao.innerText.trim().toUpperCase() === item.tamanho.trim().toUpperCase()) {
+                            
+                            const qtd = parseInt(item.quantidade);
+
+                            if (qtd <= 0) {
                                 botao.disabled = true;
                                 botao.title = "Tamanho Esgotado"; 
                                 botao.style.opacity = '0.4';
-                                botao.style.cursor = 'not-allowed';
                                 botao.style.backgroundColor = '#e0e0e0';
                                 botao.style.color = '#999';
+                                botao.style.pointerEvents = 'none'; 
+                                botao.style.cursor = 'not-allowed';
+                                
+                                botao.removeAttribute('onclick'); 
                                 botao.onclick = null; 
                             }
                         }
