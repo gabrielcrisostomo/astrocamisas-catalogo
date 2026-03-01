@@ -18,7 +18,7 @@ export default async function handler(req, res) {
                         id: 'drop-01-treino-perna',
                         title: `Oversized Treino de Perna - Tamanho ${tamanho}`,
                         quantity: 1,
-                        unit_price: 1.00,
+                        unit_price: 109.90,
                         currency_id: 'BRL',
                     }
                 ],
