@@ -33,7 +33,8 @@ export default async function handler(req, res) {
                 auto_return: "approved",
                 external_reference: tamanho,
                 metadata: {
-                    tamanho_comprado: tamanho
+                    tamanho_comprado: tamanho,
+                    email_comprador: email
                 },
                 notification_url: "https://www.astrocamisas.com.br/api/webhook" 
             }

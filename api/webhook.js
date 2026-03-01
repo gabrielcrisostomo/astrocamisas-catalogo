@@ -19,9 +19,9 @@ export default async function handler(req, res) {
             console.log("✅ Status do Pagamento:", dadosPagamento.status);
 
             if (dadosPagamento.status === 'approved') {
-                const tamanho = dadosPagamento.metadata.tamanho_comprado;
-                const emailCliente = dadosPagamento.payer.email;
-                const nomeCliente = dadosPagamento.payer.first_name || 'Astro';
+                const tamanho = dadosPagamento.metadata?.tamanho_comprado;
+                const emailCliente = dadosPagamento.metadata?.email_comprador || dadosPagamento.payer?.email;
+                const nomeCliente = dadosPagamento.payer?.first_name || 'Astro';
 
                 console.log(`👕 Comprador: ${emailCliente} | Tamanho: ${tamanho}`);
 
