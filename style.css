@@ -46,16 +46,32 @@ body {
 }
 
 header {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    background-color: #000000; 
     text-align: center;
-    padding: 3rem 1rem;
-    background-color: #000;
+    
+    padding: 20px 0; 
+    box-shadow: 0 0px 0px rgba(0, 0, 0, 0); 
+    transition: all 0.3s ease; 
+}
+
+header.cabecalho-rolou {
+    padding: 8px 0; 
+    box-shadow: 0 4px 15px rgba(45, 45, 45); 
 }
 
 .logo-topo {
-    max-width: 250px;
-    height: auto;
-    display: block;
-    margin: 0 auto;
+    max-height: 130px; 
+    width: auto;
+    display: inline-block;
+    vertical-align: middle;
+    transition: all 0.3s ease; 
+}
+
+header.cabecalho-rolou .logo-topo {
+    max-height: 100px; 
 }
 
 .grid-produtos {
@@ -302,7 +318,7 @@ header {
 }
 
 .descricao-longa {
-    color: #bbb;
+    color: #ffffff;
     margin-bottom: 3rem;
     font-size: 1.1rem;
 }
@@ -330,7 +346,7 @@ header {
 .titulo-tamanhos {
     display: block;
     margin-bottom: 0.8rem;
-    color: #bbb;
+    color: #ffffff;
     font-size: 0.95rem;
 }
 
@@ -413,7 +429,7 @@ header {
 }
 
 .container-tabela p {
-    color: #bbb;
+    color: #ffffff;
     margin-bottom: 2rem;
     font-size: 0.95rem;
 }
@@ -434,7 +450,7 @@ header {
 .container-tabela th, 
 .container-tabela td {
     padding: 1.2rem;
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid #000000;
     text-align: center;
     color: #ddd;
 }
@@ -563,7 +579,7 @@ header {
 }
 
 .hero-text p {
-    color: #888;
+    color: #ffffff;
     font-size: 1.1rem;
 }
 
@@ -698,4 +714,46 @@ footer {
     0%, 100% { transform: translateX(0); }
     20%, 60% { transform: translateX(-6px); }
     40%, 80% { transform: translateX(6px); }
+}
+
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 1000;
+}
+.modal-content {
+    background: #fff; padding: 30px 20px; border-radius: 8px;
+    width: 90%; max-width: 400px; text-align: center;
+    position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+.fechar-modal {
+    position: absolute; top: 10px; right: 15px; font-size: 28px;
+            cursor: pointer; color: #666; font-weight: bold;
+}
+.fechar-modal:hover { color: #000; }
+.modal-content h2 { font-size: 20px; margin-bottom: 10px; }
+.modal-content p { font-size: 14px; color: #000000; margin-bottom: 20px; }
+.modal-content input {
+    width: 100%; padding: 12px; margin-bottom: 20px;
+    border: 1px solid #000000; border-radius: 4px; box-sizing: border-box;
+    font-size: 16px;
+}
+.btn-confirmar-email {
+    background-color: #000; color: #fff; border: none;
+    padding: 15px 20px; font-size: 16px; border-radius: 4px;
+    cursor: pointer; width: 100%; font-weight: bold; text-transform: uppercase;
+}
+.btn-confirmar-email:hover { background-color: #333; }
+.btn-confirmar-email:disabled { background-color: #999; cursor: not-allowed; }
+
+#lightning-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    pointer-events: none;
+    background-color: #000; 
 }

@@ -9,7 +9,7 @@ export default async function handler(req, res) {
     const preference = new Preference(client);
 
     try {
-        const { tamanho } = req.body;
+        const { tamanho, email } = req.body;
 
         const result = await preference.create({
             body: {
@@ -22,6 +22,9 @@ export default async function handler(req, res) {
                         currency_id: 'BRL',
                     }
                 ],
+                payer: {
+                    email: email 
+                },
                 back_urls: {
                     success: "https://www.astrocamisas.com.br/sucesso.html",
                     failure: "https://www.astrocamisas.com.br",
